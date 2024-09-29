@@ -38,7 +38,8 @@ from STMiner import SPFinder
 ## Load data
 
 You can download the demo dataset from [GEO](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM4838133), or you can also download them from [STMOMICS](https://db.cngb.org/stomics/datasets/STDS0000086).
-STMiner can read spatial transcriptome data in various formats, such as **gem**, **bmk**, and **h5ad** (see [STMiner Documents](https://stminerdoc.readthedocs.io/en/latest/Introduction/Introduction.html)). We recommend using the **h5ad** format, as it is currently the most widely used and supported by most algorithms and software in the spatial transcriptomics field.
+STMiner can read spatial transcriptome data in various formats, such as **gem**, **bmk**, and **h5ad** (see [STMiner Documents](https://stminerdoc.readthedocs.io/en/latest/Introduction/Introduction.html)).   
+We recommend using the **h5ad** format, as it is currently the most widely used and supported by most algorithms and software in the spatial transcriptomics field.
 
 ```python
 sp = SPFinder()
@@ -46,7 +47,9 @@ file_path = 'Path/to/your/h5ad/file'
 sp.read_h5ad(file=file_path, bin_size=1)
 
 ```
-The parameter **bin_size** specifies the size of merged cells (spots). If not specified, no merging is performed. If set to 50, 50x50 cells/spots will be merged into a single cell/spot. Due to low sequencing depth in some datasets, cells/spots are often merged during analysis (e.g., stereo-seq). However, 10x data typically does not require merging.
+ - The parameter **min_cells** was used to filter genes that are too sparse to generate a reliable spatial distribution.
+ - The parameter **log1p** was used to avoid extreme values affecting the results. For most open-source h5ad files, log1p has already been executed, so the default value here is False.
+ - You can perform STMiner in your interested gene sets. Use parameter **gene_list** to input the gene list to STMiner. Then, STMiner will only calculate the given gene set of the dataset.
 
 ## Find spatial high variable genes
 
@@ -82,8 +85,10 @@ sp.fit_pattern(n_comp=20, gene_list=list(sp.global_distance[:1000]['Gene']))
 ## Build distance matrix & clustering
 
 ```python
+# This step calculates the distance between genes' spatial distributions.
 sp.build_distance_array()
-sp.cluster_gene(n_clusters=6, mds_components=20)
+# Dimensionality reduction and clustering.
+sp.cluster_gene(n_clusters=6, mds_components=20) 
 ```
 
 ## Result & Visualization
@@ -116,10 +121,10 @@ The output looks like the following:
 import seaborn as sns
 sns.clustermap(sp.genes_distance_array)
 ```
-<div align=center><img src="./pic/heatmap.png" height = "500"/></div>
+<div align=center><img src="./pic/heatmap.png" width = "320"/></div>
 
 ### To visualize the patterns:
-Note: To better visualization, images need cutting border of the original dataset. Anyhow, you can download the processed image [here](https://github.com/xjtu-omics/STMiner/blob/main/pic/demo_img.png).
+Note: A cutting border of the original dataset is needed to better visualize images. Anyhow, you can download the processed image [here](https://github.com/xjtu-omics/STMiner/blob/main/pic/demo_img.png).
 
 ```python
 sp.get_pattern_array(vote_rate=0.3)
@@ -162,15 +167,16 @@ sp.plot.plot_genes(label=0, vmax=99)
 
 ## Attributes of STMiner.SPFinder Object
 
-| Attribute            | Type         | Description                             |
-|----------------------|--------------|-----------------------------------------|
-| adata                | Anndata      | Anndata for loaded spatial data         |
-| global_distance      | pd.DataFrame | OT distance between gene and background |
-| genes_labels         | pd.DataFrame | Gene name and their pattern labels      |
-| genes_patterns       | dict         | GMM model for each gene                 |
-| genes_distance_array | pd.DataFrame | Distance between each GMM               |
-| kmeans_fit_result    | obj          | Result of k-means                       |
-| mds_features         | pd.DataFrame | embedding features after MDS            |
+| Attributes           | Type          | Description                            |
+| -------------------- | ------------- | -------------------------------------- |
+| adata                | Anndata       | Anndata for loaded spatial data        |
+| patterns             | dict          | Spatial distributions pattern of genes |
+| genes_patterns       | dict          | GMM model for each gene                |
+| global_distance      | pd. DataFrame | Distances between genes and background |
+| mds_features         | array         | embedding features of genes            |
+| genes_distance_array | pd. DataFrame | Distance between each GMM              |
+| genes_labels         | pd. DataFrame | Gene name and their pattern labels     |
+| plot                 | Object        | Call plot to visualization             |
 
 # Contact
  - Peisen Sun (sunpeisen@stu.xjtu.edu.cn)
