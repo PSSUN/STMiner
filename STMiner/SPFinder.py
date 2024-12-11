@@ -30,21 +30,21 @@ class SPFinder:
     def __init__(self, adata: Optional[AnnData] = None):
         self.adata = None
         self.patterns = None
-        self.patterns_matrix_dict = {}
-        self.patterns_binary_matrix_dict = {}
         self.genes_distance_array = None
         self.filtered_distance_array = None
         self.genes_labels = None
         self.kmeans_fit_result = None
         self.mds_features = None
         self.image_gmm = None
-        self.csr_dict = {}
         self.global_distance = None
         self.all_labels = None
-        self._gene_expression_edge = {}
-        self._highly_variable_genes = []
-        self._scope = ()
+        self.csr_dict = {}
+        self.patterns_matrix_dict = {}
+        self.patterns_binary_matrix_dict = {}
         self.plot = Plot(self)
+        self._highly_variable_genes = []
+        self._gene_expression_edge = {}
+        self._scope = ()
         # self.app = App()
         if adata is not None:
             self.set_adata(adata)
@@ -279,7 +279,7 @@ class SPFinder:
                 self.csr_dict, gene_list
             )
 
-    def get_pattern_array(self, vote_rate=0.2):
+    def get_pattern_array(self, vote_rate=0):
         self.patterns_binary_matrix_dict = {}
         label_list = set(self.genes_labels["labels"])
         for label in label_list:
@@ -311,7 +311,6 @@ class SPFinder:
         mds_components=20,
         use_highly_variable_gene=False,
         n_top_genes=500,
-        gene_list=None,
     ):
         # TODO: genes_labels should be int not float
         if use_highly_variable_gene:
