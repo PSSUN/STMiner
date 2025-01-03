@@ -8,7 +8,7 @@
 
 <div align=center><img src="./pic/logo.png" height = "200"/></div>
 
-# Introduction
+# 👩‍🏫 Introduction
 ## Why STMiner?
 
 ST data presents challenges such as uneven cell density distribution, low sampling rates, and complex spatial structures. Traditional spot-based analysis strategies struggle to effectively address these issues. STMiner explores ST data by leveraging the spatial distribution of genes, thus avoiding the biases that these conditions can introduce into the results.
@@ -26,7 +26,7 @@ Here we propose “**STMiner**”. The three key steps of analyzing ST data in S
 
 
 
-# Quick start by example
+# 🚀 Quick start by example
 **Please visit [STMiner Documents](https://stminerdoc.readthedocs.io/en/latest/Introduction/Introduction.html) for installation and detail usage.**
 
 ## import package
@@ -45,18 +45,16 @@ We recommend using the **h5ad** format, as it is currently the most widely used 
 sp = SPFinder()
 file_path = 'Path/to/your/h5ad/file'
 sp.read_h5ad(file=file_path, bin_size=1)
-
 ```
- - The parameter **min_cells** was used to filter genes that are too sparse to generate a reliable spatial distribution.
- - The parameter **log1p** was used to avoid extreme values affecting the results. For most open-source h5ad files, log1p has already been executed, so the default value here is False.
- - You can perform STMiner in your interested gene sets. Use parameter **gene_list** to input the gene list to STMiner. Then, STMiner will only calculate the given gene set of the dataset.
-
 ## Find spatial high variable genes
 
 ```python
 sp.get_genes_csr_array(min_cells=500, log1p=False)
 sp.spatial_high_variable_genes()
 ```
+ - The parameter **min_cells** was used to filter genes that are too sparse to generate a reliable spatial distribution.
+ - The parameter **log1p** was used to avoid extreme values affecting the results. For most open-source h5ad files, log1p has already been executed, so the default value here is False.
+ - You can perform STMiner in your interested gene sets. Use parameter **gene_list** to input the gene list to STMiner. Then, STMiner will only calculate the given gene set of the dataset.
 
 You can check the distance of each gene by:
 
@@ -121,7 +119,7 @@ The output looks like the following:
 import seaborn as sns
 sns.clustermap(sp.genes_distance_array)
 ```
-<div align=center><img src="./pic/heatmap.png" width = "320"/></div>
+<div align=center><img src="./pic/heatmap.png" width = "400"/></div>
 
 ### To visualize the patterns:
 Note: A cutting border of the original dataset is needed to better visualize images. Anyhow, you can download the processed image [here](https://github.com/xjtu-omics/STMiner/blob/main/pic/demo_img.png).
@@ -141,7 +139,7 @@ sp.plot.plot_pattern(vmax=99,
 ```
 
 <div  align="center">    
-  <img src="./pic/scatterplot.png" width = "600" align=center />
+  <img src="./pic/scatterplot.png" width = "400" align=center />
 </div>
 
 ### Visualize the intersections between patterns 3 & 1:
@@ -178,11 +176,11 @@ sp.plot.plot_genes(label=0, vmax=99)
 | genes_labels         | pd. DataFrame | Gene name and their pattern labels     |
 | plot                 | Object        | Call plot to visualization             |
 
-# Release history
+# 📜 Release history
 https://pypi.org/project/STMiner/#history
 
-# Contact
- - Peisen Sun: E-mail(sunpeisen@stu.xjtu.edu.cn) / X(https://x.com/Sun_python)
- - Kai Ye: E-mail (kaiye@xjtu.edu.cn)
+# ✉️ Contact
+ - Peisen Sun: 📧(sunpeisen@stu.xjtu.edu.cn) / 𝕏(https://x.com/Sun_python)
+ - Kai Ye: 📧(kaiye@xjtu.edu.cn)
 
 <img src="./pic/footer.svg" width="100%">
