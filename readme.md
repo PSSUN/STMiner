@@ -1,21 +1,26 @@
 ![Static Badge](https://img.shields.io/badge/License-GPL3.0-blue)
-![Static Badge](https://img.shields.io/badge/readthedocs-blue?logo=readthedocs&label=Documents)
+![PyPI - Version](https://img.shields.io/pypi/v/STMiner)
+![GitHub repo size](https://img.shields.io/github/repo-size/xjtu-omics/STMiner)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/STMiner)
 ![Static Badge](https://img.shields.io/badge/3.10-green?logo=python&label=Python&labelColor=yellow)
 ![Static Badge](https://img.shields.io/badge/Linux-blue?logo=Linux&logoColor=white)
 ![Static Badge](https://img.shields.io/badge/Windows-blue?logo=Windows&logoColor=white)
 ![Static Badge](https://img.shields.io/badge/macos-blue?logo=apple&logoColor=white)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.14678661.svg)](https://doi.org/10.5281/zenodo.14678661)
 [![Documentation Status](https://readthedocs.org/projects/stminerdoc/badge/?version=latest)](https://stminerdoc.readthedocs.io/en/latest/?badge=latest) 
+![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/xjtu-omics/STMiner)
+![GitHub Repo stars](https://img.shields.io/github/stars/xjtu-omics/STMiner)
 
 <div align=center><img src="./pic/logo.png" height = "200"/></div>
 
 # 👩‍🏫 Introduction
 ## Why STMiner?
 
-ST data presents challenges such as uneven cell density distribution, low sampling rates, and complex spatial structures. Traditional spot-based analysis strategies struggle to effectively address these issues. STMiner explores ST data by leveraging the spatial distribution of genes, thus avoiding the biases that these conditions can introduce into the results.
+ST data presents challenges such as uneven cell density distribution, low sampling rates, and complex spatial structures. Traditional spot-based analysis strategies struggle to effectively address these issues. STMiner explores ST data by leveraging the spatial distribution of genes, thus avoiding the biases that these conditions can introduce into the results.<br>
+
+Most importantly, STMiner offers seamless integration with [Anndata](https://github.com/scverse/anndata)/[Scanpy](https://github.com/scverse/scanpy) and can be **easily installed** via [PyPI](https://pypi.org/project/STMiner/).<br>
 
 <div align=center><img src="./pic/why.png" height = "500"/></div>
-
-<br>
 
 ## Method detail
 Here we propose “**STMiner**”. The three key steps of analyzing ST data in STMiner are depicted. 
@@ -122,20 +127,21 @@ sns.clustermap(sp.genes_distance_array)
 <div align=center><img src="./pic/heatmap.png" width = "400"/></div>
 
 ### To visualize the patterns:
-Note: A cutting border of the original dataset is needed to better visualize images. Anyhow, you can download the processed image [here](https://github.com/xjtu-omics/STMiner/blob/main/pic/demo_img.png).
+**Note**: A image path for ***image_path*** is needed if you want to show background image. In this example, you can download the processed image [here](https://github.com/xjtu-omics/STMiner/blob/main/pic/demo_img.png). Anyway, ***image_path*** is **optional**, not providing background images has no impact on the calculation results.
 
 ```python
 sp.get_pattern_array(vote_rate=0.3)
 img_path = 'path/to/downloaded/image'
 sp.plot.plot_pattern(vmax=99,
-                     heatmap=False,
-                     s=5,
-                     reverse_y=True,
-                     reverse_x=True,
-                     image_path=img_path,
-                     rotate_img=True,
-                     k=4,
-                     aspect=0.55)
+                     heatmap=False, 
+                     s=5, 
+                     reverse_y=True, # optional
+                     reverse_x=True, # optional
+                     image_path=img_path, # optional
+                     rotate_img=True, # optional
+                     k=4, # optional
+                     aspect=0.55 # optional
+                     )
 ```
 
 <div  align="center">    
@@ -179,11 +185,14 @@ sp.plot.plot_genes(label=0, vmax=99)
 # 📜 Release history
 https://pypi.org/project/STMiner/#history
 
+# 🔖 Referance
+[1] 
+
 # ✉️ Contact
  - Peisen Sun: 📧(sunpeisen@stu.xjtu.edu.cn) / 𝕏(https://x.com/Sun_python)
  - Kai Ye: 📧(kaiye@xjtu.edu.cn)
 
 <br>
-Please ⭐ STMiner on Github if you find it's useful, thank you!
+Please ⭐Star STMiner on Github if you find it's useful, thank you!
   
 <img src="./pic/footer.svg" width="100%">
