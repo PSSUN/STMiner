@@ -6,11 +6,11 @@ import numpy as np
 import scanpy as sc
 from anndata import AnnData
 from scipy.stats import zscore
-
+from sklearn import mixture
 from STMiner.Algorithm.algorithm import cluster
 from STMiner.Algorithm.distance import *
 from STMiner.Algorithm.distance import compare_gmm_distance
-from STMiner.Algorithm.distribution import get_gmm
+from STMiner.Algorithm.distribution import get_gmm, array_to_list
 from STMiner.Algorithm.distribution import view_gmm, fit_gmms, get_gmm_from_image
 from STMiner.IO.IOUtil import merge_bin_coordinate
 from STMiner.IO.read_bmk import read_bmk
@@ -39,6 +39,7 @@ class SPFinder:
         self.image_gmm = None
         self.global_distance = None
         self.all_labels = None
+        self.custom_pattern = None
         self.csr_dict = {}
         self.patterns_matrix_dict = {}
         self.patterns_binary_matrix_dict = {}
@@ -306,31 +307,46 @@ class SPFinder:
         if mode == "vote":
             label_list = set(self.genes_labels["labels"])
             for label in label_list:
-                gene_list = list(
-                    self.genes_labels[self.genes_labels["labels"] == label]["gene_id"]
-                )
-                total_count = np.zeros(get_exp_array(self.adata, gene_list[0]).shape)
-                total_coo_list = []
-                vote_array = np.zeros(get_exp_array(self.adata, gene_list[0]).shape)
-                for gene in gene_list:
-                    exp_matrix = get_exp_array(self.adata, gene)
-                    # calculate nonzero index
-                    non_zero_coo_list = np.vstack((np.nonzero(exp_matrix))).T.tolist()
-                    for coo in non_zero_coo_list:
-                        total_coo_list.append(tuple(coo))
-                    total_count = scale_array(exp_matrix, total_count)
-                count_dict = Counter(total_coo_list)
-                for ele, count in count_dict.items():
-                    if int(count) / len(gene_list) >= vote_rate:
-                        vote_array[ele] = 1
-                total_count = total_count * vote_array
-                binary_arr = np.where(total_count != 0, 1, total_count)
+                gene_list = list(self.genes_labels[self.genes_labels["labels"] == label]["gene_id"])
+                binary_arr, total_count = self._genes_to_pattern(gene_list, vote_rate)
                 self.patterns_matrix_dict[label] = total_count
                 self.patterns_binary_matrix_dict[label] = binary_arr
         elif mode == "test":
             p_value_threshold = 0.05
             # TODO: rewrite test mode, improve run time.
+            pass
+        else:
+            raise ValueError("mode should be vote or test")
 
+    def _genes_to_pattern(self, gene_list, vote_rate):
+
+        total_count = np.zeros(get_exp_array(self.adata, gene_list[0]).shape)
+        total_coo_list = []
+        vote_array = np.zeros(get_exp_array(self.adata, gene_list[0]).shape)
+        for gene in gene_list:
+            exp_matrix = get_exp_array(self.adata, gene)
+            # calculate nonzero index
+            non_zero_coo_list = np.vstack((np.nonzero(exp_matrix))).T.tolist()
+            for coo in non_zero_coo_list:
+                total_coo_list.append(tuple(coo))
+            total_count = scale_array(exp_matrix, total_count)
+        count_dict = Counter(total_coo_list)
+        for ele, count in count_dict.items():
+            if int(count) / len(gene_list) >= vote_rate:
+                vote_array[ele] = 1
+        total_count = total_count * vote_array
+        binary_arr = np.where(total_count != 0, 1, total_count)
+        return binary_arr, total_count
+
+    def get_custom_pattern(self, gene_list, n_components=20, vote_rate: int = 0, mode: str = "vote"):
+        if mode == "vote":
+            _, total_count = self._genes_to_pattern(gene_list, vote_rate)
+            _gmm = mixture.GaussianMixture(n_components=n_components)
+            _gmm.fit(array_to_list(np.round(total_count).astype(np.int32)))
+            self.custom_pattern = _gmm
+        elif mode == "test":
+            p_value_threshold = 0.05
+            # TODO: rewrite test mode, improve run time.
             pass
         else:
             raise ValueError("mode should be vote or test")
@@ -380,6 +396,17 @@ class SPFinder:
             for i, col_index in enumerate(all_labels["label"].to_list())
         ]
         self.all_labels = all_labels
+
+    def get_pattern_of_given_genes(self, gene_list, n_comp=20):
+        _genes = []
+        if self.adata is None:
+            raise ValueError("Please load ST data first.")
+        for gene in gene_list:
+            if gene in list(self.adata.var.index):
+                _genes.append(gene)
+
+        # Get expression patterns of interested gene set
+        self.get_custom_pattern(gene_list=_genes, n_components=n_comp, vote_rate=0)
 
     # def flush_app(self):
     #     self.app = App()
