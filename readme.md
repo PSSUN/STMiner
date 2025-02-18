@@ -12,6 +12,9 @@
 ![GitHub Repo stars](https://img.shields.io/github/stars/xjtu-omics/STMiner)
 
 <div align=center><img src="./pic/logo.png" height = "200"/></div>
+<p align="center">
+ <a href="https://stminerdoc.readthedocs.io/en/latest/Introduction/Introduction.html">📖 Documents</a> | <a href="https://stminerdoc.readthedocs.io/en/latest/Tutorial/Tutorial.html">🚀 Tutorial</a> | <a href="https://x.com/Sun_python">💬 Contact me</a>
+</p>
 
 # 👩‍🏫 Introduction
 ## Why STMiner?
@@ -186,7 +189,7 @@ sp.plot.plot_genes(label=0, vmax=99)
 https://pypi.org/project/STMiner/#history
 
 # 🔖 Referance
-[1] 
+[1] Sun, P., Bush, S. J., Wang, S., Jia, P., Li, M., Xu, T., Zhang, P., Yang, X., Wang, C., Xu, L., Wang, T., & Ye, K. (2025). STMiner: Gene-centric spatial transcriptomics for deciphering tumor tissues. Cell Genomics, 5(2). https://doi.org/10.1016/j.xgen.2025.100771 
 
 # ✉️ Contact
  - Peisen Sun: 📧(sunpeisen@stu.xjtu.edu.cn) / 𝕏(https://x.com/Sun_python)
