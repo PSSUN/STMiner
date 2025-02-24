@@ -32,10 +32,10 @@ Here we propose “**STMiner**”. The three key steps of analyzing ST data in S
 
 (**Left top**) STMiner first utilizes Gaussian Mixture Models (GMMs) to represent the spatial distribution of each gene and the overall spatial distribution. (**Left bottom**) STMiner then identifies spatially variable genes by calculating the cost that transfers the overall spatial distribution to gene spatial distribution. Genes with high costs exhibit significant spatial variation, meaning their expression patterns differ considerably across different regions of the tissue. The distance array is built between SVGs in the same way, genes with similar spatial structures have a low cost to transport to each other, and vice versa. (**Right**) The distance array is embedded into a low-dimensional space by Multidimensional Scaling, allowing for clustering genes with similar spatial expression patterns into distinct functional gene sets and getting their spatial structure. 
 
-
-
 # 🚀 Quick start by example
 **Please visit [STMiner Documents](https://stminerdoc.readthedocs.io/en/latest/Introduction/Introduction.html) for installation and detail usage.**
+
+We also provide a step-by-step [Jupyter Notebook](https://jupyter.org/) file to reproduce the results. You can access it [here](https://github.com/PSSUN/STMiner-test-data/blob/main/STARprotocols.ipynb). Additionally, you can run STMiner on your own:
 
 ## import package
 
@@ -44,9 +44,7 @@ from STMiner import SPFinder
 ```
 
 ## Load data
-
-You can download the demo dataset from [GEO](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM4838133), or you can also download them from [STMOMICS](https://db.cngb.org/stomics/datasets/STDS0000086).
-STMiner can read spatial transcriptome data in various formats, such as **gem**, **bmk**, and **h5ad** (see [STMiner Documents](https://stminerdoc.readthedocs.io/en/latest/Introduction/Introduction.html)).   
+You can download them from [STMiner-test-data](https://github.com/PSSUN/STMiner-test-data). You can also download the raw dataset from [GEO](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM4838133), STMiner can read spatial transcriptome data in various formats, such as **gem**, **bmk**, and **h5ad** (see [STMiner Documents](https://stminerdoc.readthedocs.io/en/latest/Introduction/Introduction.html)).   
 We recommend using the **h5ad** format, as it is currently the most widely used and supported by most algorithms and software in the spatial transcriptomics field.
 
 ```python
@@ -57,7 +55,7 @@ sp.read_h5ad(file=file_path, bin_size=1)
 ## Find spatial high variable genes
 
 ```python
-sp.get_genes_csr_array(min_cells=500, log1p=False)
+sp.get_genes_csr_array(min_cells=100, log1p=False, , normalize=False, vmax=100)
 sp.spatial_high_variable_genes()
 ```
  - The parameter **min_cells** was used to filter genes that are too sparse to generate a reliable spatial distribution.
@@ -70,20 +68,29 @@ You can check the distance of each gene by:
 sp.global_distance
 ```
 
-| Gene  | Distance | z-score |
-| ----- | -------- | ------- |
-| geneA | 9998     | 5.5     |
-| geneB | 9994     | 5.4     |
-| ...   | ...      | 5.3     |
-| geneC | 8724     | 5.2     |
+| Gene       | Distance | z-score  |
+| ---------- | -------- | -------- |
+| myha       | 1.35E+08 | 2.771493 |
+| vmhcl      | 1.01E+08 | 2.470881 |
+| zgc:101560 | 9.95E+07 | 2.458787 |
+| pvalb1     | 9.82E+07 | 2.445257 |
+| myhz2      | 9.75E+07 | 2.437787 |
+| ...        | ...      | ...      |
+| rps17      | 2.61E+05 | -3.63207 |
+| rpl13      | 2.48E+05 | -3.68506 |
+| rpl32      | 2.43E+05 | -3.70327 |
+| rsl24d1    | 2.27E+05 | -3.7757  |
+| rpl22      | 1.83E+05 | -3.99332 |
 
-The first column is the gene name, and the second column is the difference between the spatial distribution of the gene and the background.</br>
+
+
+The 'Gene' column is the gene name, and the 'Distance' column is the difference between the spatial distribution of the gene and the background.</br>
 A larger difference indicates a more pronounced spatial pattern of the gene.
 
 ## Preprocess and Fit GMM
 
 ```python
-sp.fit_pattern(n_comp=20, gene_list=list(sp.global_distance[:1000]['Gene']))
+sp.fit_pattern(n_comp=10, gene_list=list(sp.global_distance[:2000]['Gene']))
 ```
 
 **n_comp=20** means each GMM model has 20 components.
@@ -129,22 +136,53 @@ sns.clustermap(sp.genes_distance_array)
 ```
 <div align=center><img src="./pic/heatmap.png" width = "400"/></div>
 
+### Finding gene sets with interested structure
+Get patterns of interested gene/gene set:
+
+```python
+interested_genes = ["mbpa", "BX957331.1", "madd"]
+sp.get_pattern_of_given_genes(gene_list = interested_genes, n_comp=10)
+```
+Compare the distance between all genes and the given gene set
+
+```python
+from STMiner.Algorithm.distance import compare_gmm_distance
+df = compare_gmm_distance(sp.custom_pattern, sp.patterns)
+df.to_csv('compare_distance.csv')
+df
+```
+
+| Gene              | distance           |
+| ----------------- | ------------------ |
+| mbpa              | 0.8914643122002152 |
+| map1ab            | 0.9479574709875033 |
+| snap25a           | 0.9801858512442632 |
+| nsfa              | 0.9948239449738531 |
+| stxbp1a           | 0.99916307128497   |
+| ...               | ...                |
+| lrrfip1b          | 1.9981586323013931 |
+| si:ch211-145h19.2 | 1.9995115533927301 |
+| BX248122.1        | 1.9996375745511945 |
+| si:dkey-7i4.24    | 1.9997052371268462 |
+
+A lower distance indicates that the spatial expression pattern of the gene is more similar to that of the gene set of interest. 
+
 ### To visualize the patterns:
 **Note**: A image path for ***image_path*** is needed if you want to show background image. In this example, you can download the processed image [here](https://github.com/xjtu-omics/STMiner/blob/main/pic/demo_img.png). Anyway, ***image_path*** is **optional**, not providing background images has no impact on the calculation results.
 
 ```python
-sp.get_pattern_array(vote_rate=0.3)
+sp.get_pattern_array(vote_rate=0.2)
 img_path = 'path/to/downloaded/image'
 sp.plot.plot_pattern(vmax=99,
                      heatmap=False, 
-                     s=5, 
+                     s=10, 
                      reverse_y=True, # optional
                      reverse_x=True, # optional
                      image_path=img_path, # optional
                      rotate_img=True, # optional
                      k=4, # optional
                      aspect=0.55 # optional
-                     )
+                    )
 ```
 
 <div  align="center">    
@@ -186,16 +224,25 @@ sp.plot.plot_genes(label=0, vmax=99)
 | plot                 | Object        | Call plot to visualization             |
 
 # 📜 Release history
-https://pypi.org/project/STMiner/#history
+| Version | Date      | Description                                   |
+| ------- | --------- | --------------------------------------------- |
+| 0.0.8   | 2025/2/23 | change default value of Normalize             |
+| 0.0.7   | 2025/2/21 | improved performance of *get_pattern_array()* |
+
+pypi: https://pypi.org/project/STMiner/#history
 
 # 🔖 Referance
-[1] Sun, P., Bush, S. J., Wang, S., Jia, P., Li, M., Xu, T., Zhang, P., Yang, X., Wang, C., Xu, L., Wang, T., & Ye, K. (2025). STMiner: Gene-centric spatial transcriptomics for deciphering tumor tissues. Cell Genomics, 5(2). https://doi.org/10.1016/j.xgen.2025.100771 
+[1] Sun, P., Bush, S. J., Wang, S., Jia, P., Li, M., Xu, T., Zhang, P., Yang, X., Wang, C., Xu, L., Wang, T., & Ye, K. (2025). <a href="https://plu.mx/plum/a/?doi=10.1016%2Fj.xgen.2025.100771" data-popup="bottom" data-badge="true" class="plumx-plum-print-popup" data-site="plum" data-hide-when-empty="true" data-no-link="true">STMiner: Gene-centric spatial transcriptomics for deciphering tumor tissues</a> Cell Genomics, 5(2). https://doi.org/10.1016/j.xgen.2025.100771 
 
 # ✉️ Contact
+If you encounter any issues during use, please try updating STMiner to the latest version. If the issue persists, feel free to submit your problem on the issue page or contact us through the following methods:
+
  - Peisen Sun: 📧(sunpeisen@stu.xjtu.edu.cn) / 𝕏(https://x.com/Sun_python)
  - Kai Ye: 📧(kaiye@xjtu.edu.cn)
 
 <br>
-Please ⭐Star STMiner on Github if you find it's useful, thank you!
-  
+<div align=center >
+ <p> <b>Please ⭐Star STMiner on Github if you find it's useful, thank you!</b></p>
+</div>
+
 <img src="./pic/footer.svg" width="100%">
