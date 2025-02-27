@@ -16,6 +16,10 @@
  <a href="https://stminerdoc.readthedocs.io/en/latest/Introduction/Introduction.html">📖 Documents</a> | <a href="https://stminerdoc.readthedocs.io/en/latest/Tutorial/Tutorial.html">🚀 Tutorial</a> | <a href="https://x.com/Sun_python">💬 Contact me</a>
 </p>
 
+<div align=center><img src="./pic/to3D.gif" height = "200"/></div>
+<p align="center"><b>Core Concept - Discrete to Continuous</b></p>
+
+
 # 👩‍🏫 Introduction
 ## Why STMiner?
 
@@ -35,7 +39,9 @@ Here we propose “**STMiner**”. The three key steps of analyzing ST data in S
 # 🚀 Quick start by example
 **Please visit [STMiner Documents](https://stminerdoc.readthedocs.io/en/latest/Introduction/Introduction.html) for installation and detail usage.**
 
-We also provide a step-by-step [Jupyter Notebook](https://jupyter.org/) file to reproduce the results. You can access it [here](https://github.com/PSSUN/STMiner-test-data/blob/main/STARprotocols.ipynb). Additionally, you can run STMiner on your own:
+💡💡💡 We also provide a step-by-step [Jupyter Notebook](https://jupyter.org/) file to reproduce the results. You can access it [**here**](https://github.com/PSSUN/STMiner-test-data/blob/main/STARprotocols.ipynb). 
+
+Additionally, you can run STMiner on your own:
 
 ## import package
 
@@ -172,17 +178,16 @@ A lower distance indicates that the spatial expression pattern of the gene is mo
 
 ```python
 sp.get_pattern_array(vote_rate=0.2)
-img_path = 'path/to/downloaded/image'
-sp.plot.plot_pattern(vmax=99,
-                     heatmap=False, 
-                     s=10, 
-                     reverse_y=True, # optional
-                     reverse_x=True, # optional
-                     image_path=img_path, # optional
-                     rotate_img=True, # optional
-                     k=4, # optional
-                     aspect=0.55 # optional
-                    )
+img_path = 'path/to/downloaded/demo_img.png'
+sp.plot.plot_pattern(heatmap=False, 
+                     s=10,
+                     rotate=False,
+                     reverse_y=True,
+                     reverse_x=True,
+                     vmax=95,
+                     image_path="./demo_img.png",
+                     cmap="Spectral_r",
+                     aspect=.55)
 ```
 
 <div  align="center">    
@@ -232,7 +237,7 @@ sp.plot.plot_genes(label=0, vmax=99)
 pypi: https://pypi.org/project/STMiner/#history
 
 # 🔖 Referance
-[1] Sun, P., Bush, S. J., Wang, S., Jia, P., Li, M., Xu, T., Zhang, P., Yang, X., Wang, C., Xu, L., Wang, T., & Ye, K. (2025). <a href="https://plu.mx/plum/a/?doi=10.1016%2Fj.xgen.2025.100771" data-popup="bottom" data-badge="true" class="plumx-plum-print-popup" data-site="plum" data-hide-when-empty="true" data-no-link="true">STMiner: Gene-centric spatial transcriptomics for deciphering tumor tissues</a> Cell Genomics, 5(2). https://doi.org/10.1016/j.xgen.2025.100771 
+[1] Sun, P., Bush, S. J., Wang, S., Jia, P., Li, M., Xu, T., ... & Ye, K. (2025). [STMiner: Gene-centric spatial transcriptomics for deciphering tumor tissues.](https://doi.org/10.1016/j.xgen.2025.100771 ) Cell Genomics, 5(2).
 
 # ✉️ Contact
 If you encounter any issues during use, please try updating STMiner to the latest version. If the issue persists, feel free to submit your problem on the issue page or contact us through the following methods:
